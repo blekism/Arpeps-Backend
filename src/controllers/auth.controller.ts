@@ -120,6 +120,6 @@ export const refresh = async (req: Request, res: Response) => {
     });
     res.json({ status: "refreshed" });
   } catch (error) {
-    res.status(401).json({ error: "Invalid refresh token" });
+    res.status(401).json({ error: "Invalid refresh token", cuh: error });
   }
 };

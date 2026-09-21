@@ -6,6 +6,8 @@ import { errorHandler } from "./middleware/errorHandler";
 import authRouter from "./routes/auth.routes";
 import helmet from "helmet";
 import { issueCsrfToken } from "./middleware/csrf";
+import paperRoutes from "./routes/papers.routes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -18,14 +20,20 @@ app.use(
 );
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 app.use(issueCsrfToken);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+app.get("/api/csrf-token", issueCsrfToken, (req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use("/api/concepts", itemsRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/papers", paperRoutes);
 
 // 404 for unmatched routes
 app.use((req, res) => {

@@ -53,7 +53,6 @@ export const laggin = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
-    console.log("tokens are: ", accessToken, refreshToken);
     res.json({ id: user.id, email: user.email });
   } catch (error) {
     res.status(500).json({ error: error });

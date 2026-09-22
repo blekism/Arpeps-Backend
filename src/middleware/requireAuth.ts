@@ -16,6 +16,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     (req as any).user_id = (payload as any).user_id;
     next();
   } catch (error) {
+    // kapag expired ang token
     if (error instanceof TokenExpiredError) {
       return res.status(401).json({
         error: "Token Expired",
@@ -23,6 +24,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
       });
     }
 
+    // babalik sa login
     return res.status(401).json({
       error: "Invalid Token",
       code: "INVALID_TOKEN",

@@ -19,6 +19,13 @@ function buildMultiRowInsert(
 }
 
 // INSERT INTO xtable (paper_id, reason, concept_id, cohesion_score) VALUES (134, xyzreaosn, 1, 0.98), (231, abcreason, 2, 0.76)
+// 0 x 4 = 0 -> 0 + 0 + 1 = $1, 0 + 1 + 1 = $2, $3, $4
+// 1 x 4 = 4 -> 4 + 0 + 1 = $5, 4 + 1 + 1 = $6, 4 + 2 + 1 = $7, 4 + 3 + 1 = $8
+//
+//
+//
+//
+//
 
 export async function getPaperServiceAll(user_id: string) {
   const res = await pool.query(
@@ -183,6 +190,7 @@ export async function postSaveAnalysisService(
           ec.concept_id,
         ]),
       );
+      console.log("extracted_concepts values:", values);
 
       await client.query(sql, values);
     }
@@ -199,7 +207,6 @@ export async function postSaveAnalysisService(
           "to_concept",
         ],
         concept_relationships.map((cr) => [
-          paper_id,
           cr.kind,
           cr.strength,
           cr.reason,
@@ -208,7 +215,7 @@ export async function postSaveAnalysisService(
           cr.to_concept,
         ]),
       );
-
+      console.log("extracted_concepts values:", values);
       await client.query(sql, values);
     }
 
@@ -223,6 +230,7 @@ export async function postSaveAnalysisService(
           ac.cohesion_score,
         ]),
       );
+      console.log("extracted_concepts values:", values);
 
       await client.query(sql, values);
     }

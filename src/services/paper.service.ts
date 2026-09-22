@@ -21,11 +21,6 @@ function buildMultiRowInsert(
 // INSERT INTO xtable (paper_id, reason, concept_id, cohesion_score) VALUES (134, xyzreaosn, 1, 0.98), (231, abcreason, 2, 0.76)
 // 0 x 4 = 0 -> 0 + 0 + 1 = $1, 0 + 1 + 1 = $2, $3, $4
 // 1 x 4 = 4 -> 4 + 0 + 1 = $5, 4 + 1 + 1 = $6, 4 + 2 + 1 = $7, 4 + 3 + 1 = $8
-//
-//
-//
-//
-//
 
 export async function getPaperServiceAll(user_id: string) {
   const res = await pool.query(
@@ -242,4 +237,16 @@ export async function postSaveAnalysisService(
   } finally {
     client.release();
   }
+}
+
+export async function getMarkdownPaperSingle(
+  user_id: string,
+  paper_id: string,
+) {
+  const res = await pool.query(
+    `SELECT paper_id, content FROM research_papers_tbl WHERE user_id = $1 AND paper_id = $2`,
+    [user_id, paper_id],
+  );
+
+  return res.rows[0];
 }

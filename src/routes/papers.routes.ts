@@ -5,6 +5,7 @@ import {
   getPaperControllerSingle,
   postSaveAnalysisController,
   getMarkdownControllerSingle,
+  getMapControllerSingle,
 } from "../controllers/papers.controller";
 import { requireAuth } from "../middleware/requireAuth";
 import { verifyCsrfToken } from "../middleware/csrf";
@@ -15,6 +16,7 @@ router.get("/mypapers", requireAuth, getPaperControllerAll);
 router.post("/uploadpaper", requireAuth, verifyCsrfToken, postPaperController);
 router.get("/apaper/:paper_id", requireAuth, getPaperControllerSingle);
 router.get("/acontent/:paper_id", requireAuth, getMarkdownControllerSingle);
+router.get("/amap/:paper_id", requireAuth, getMapControllerSingle);
 router.post(
   "/uploadanalysis",
   requireAuth,

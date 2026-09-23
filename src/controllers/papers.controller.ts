@@ -17,6 +17,7 @@ const paperSchema = z.object({
   content: z.string(),
 });
 
+//-------------------------------------------
 const analysisSchema = z.object({
   paper_id: z.string(),
 
@@ -45,6 +46,7 @@ const analysisSchema = z.object({
     }),
   ),
 });
+//-------------------------------------------
 
 export const getPaperControllerAll = async (req: Request, res: Response) => {
   const user_id = (req as any).user_id;

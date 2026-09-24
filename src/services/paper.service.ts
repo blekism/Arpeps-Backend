@@ -296,3 +296,10 @@ export async function getPaperMapService(user_id: string, paper_id: string) {
 
   return res.rows[0];
 }
+
+export async function deletePaperSingle(user_id: string, paper_id: string) {
+  const res = await pool.query(
+    `DELETE FROM research_papers_tbl WHERE user_id = $1 AND paper_id = $2`,
+    [user_id, paper_id],
+  );
+}

@@ -6,6 +6,7 @@ import {
   postSaveAnalysisService,
   getMarkdownPaperSingle,
   getPaperMapService,
+  deletePaperSingle,
 } from "../services/paper.service";
 import { z } from "zod";
 
@@ -217,6 +218,36 @@ export const getMapControllerSingle = async (req: Request, res: Response) => {
     }
 
     res.status(200).json(concepts);
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to fetch your papers",
+      devErr: error,
+    });
+  }
+};
+
+export const deletePaperControllerSingle = async (
+  req: Request,
+  res: Response,
+) => {
+  const user_id = (req as any).user_id; // id getter
+
+  const parsed = idParamSchema.safeParse(req.params);
+  // req.params holds the url: http://localhost:3000/api/papers/57cfd510-9e0e-4cf1-b10a-ae79623a840b
+
+  if (!parsed.success) {
+    // if zod validation fails, return 400 e.g. type mismatch. expecting uuid, passed plain string will return 400
+    return res.status(400).json({ error: "invalid paper id" });
+  }
+
+  // will get paper id inside parsed.data from zod
+  const { paper_id } = parsed.data;
+
+  try {
+    // pass id to services
+    await deletePaperSingle(user_id, paper_id);
+
+    res.status(200).json({ message: "Paper deleted successfully" });
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch your papers",

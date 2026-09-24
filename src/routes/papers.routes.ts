@@ -6,6 +6,7 @@ import {
   postSaveAnalysisController,
   getMarkdownControllerSingle,
   getMapControllerSingle,
+  deletePaperControllerSingle,
 } from "../controllers/papers.controller";
 import { requireAuth } from "../middleware/requireAuth";
 import { verifyCsrfToken } from "../middleware/csrf";
@@ -22,6 +23,11 @@ router.post(
   requireAuth,
   verifyCsrfToken,
   postSaveAnalysisController,
+);
+router.delete(
+  "/deletepaper/:paper_id",
+  requireAuth,
+  deletePaperControllerSingle,
 );
 
 export default router;

@@ -14,25 +14,13 @@ it is primarily to learn backend development using ExpressJs with TypeScript.
 * Postgres v17.6.1.155
 
 ### Architecture Overview
-Frontend (Separate Origin)
-    │  fetch via apiFetch() / plain fetch() / axios request
-    ▼
-Express App (app.ts)
-    │ cors -> helmet -> cookieParser -> express.json -> rate limiters
-    ▼
-Routes (routes/*.routes.ts)
-    │ maps URL + method + controller, with per route middleware
-    ▼  
-Middleware (requireAuth, verifyCsrfToken)
-    │ classify/gatekeep the request
-    ▼
-Controllers (controllers/*.controller.ts)
-    │ read req, call service(s), shape the HTTP Response
-    ▼
-Services (service/*.service.ts)
-    │ business logic, parametarized queries, transactions
-    ▼
-Postgres (Supabase) - Obtain schema by running node-pg-migrate up
+1. Frontend (Separate Origin) - fetch via apiFetch() / plain fetch() / axios request  
+2. Express App (app.ts) - cors -> helmet -> cookieParser -> express.json -> rate limiters
+3. Routes (routes/*.routes.ts) - maps URL + method + controller, with per route middleware
+4. Middleware (requireAuth, verifyCsrfToken) - classify/gatekeep the request
+5. Controllers (controllers/*.controller.ts) - read req, call service(s), shape the HTTP Response
+6. Services (service/*.service.ts) - business logic, parametarized queries, transactions
+7. Postgres (Supabase) - Obtain schema by running node-pg-migrate up
 
 ### Design Decisions
 - **Layered Architecture**: For a simple project like Arpeps, having a linear and predictable path makes development and maintenance easier because all requests follow a set path from *.routes.ts -> /middleware -> *.controllers.ts -> *.services.ts. Wherein each directory has its own clear responsibility. If project does or is planned to grow further, Feature-based Architecture may be adopted for a cleaner architecture.

@@ -24,57 +24,55 @@ function buildMultiRowInsert(
 
 export async function getPaperServiceAll(user_id: string) {
   const res = await pool.query(
-    // replace the first table with tbl1.* if going to use for FE for complete data
     `SELECT
-      tbl1.paper_id,
-      tbl1.user_id,
-      tbl1.created_at,
-      tbl1.overall_cohesion_score,
-      COALESCE(children.items, '[]'::jsonb) as tbl2,
-      COALESCE(children2.items, '[]'::jsonb) as tbl3,
-      COALESCE(children3.items, '[]'::jsonb) as tbl4
-    FROM research_papers_tbl as tbl1
+      research_papers_tbl.*,
+      COALESCE(children.items, '[]'::jsonb),
+      COALESCE(children2.items, '[]'::jsonb),
+      COALESCE(children3.items, '[]'::jsonb)
+    FROM research_papers_tbl
+
     LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl2)
+            to_jsonb(extracted_concepts_tbl)
             || jsonb_build_object(
-                'tbl5', jsonb_build_object('concept_name', tbl5.concept_name)
+                'concepts_tbl', jsonb_build_object('concept_name', concepts_tbl.concept_name)
             )
         ) AS items
-        FROM extracted_concepts_tbl tbl2
-        LEFT JOIN concepts_tbl tbl5
-            ON tbl5.concept_id = tbl2.concept_id
-        WHERE tbl2.paper_id = tbl1.paper_id
+        FROM extracted_concepts_tbl
+        LEFT JOIN concepts_tbl
+            ON concepts_tbl.concept_id = extracted_concepts_tbl.concept_id
+        WHERE extracted_concepts_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children ON true
+
      LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl3)
+            to_jsonb(cohesion_analysis_tbl)
             || jsonb_build_object(
-                'tbl5', jsonb_build_object('concept_name', tbl5.concept_name)
+                'concepts_tbl', jsonb_build_object('concept_name', concepts_tbl.concept_name)
             )
         ) AS items
-        FROM cohesion_analysis_tbl tbl3
-        LEFT JOIN concepts_tbl tbl5
-            ON tbl5.concept_id = tbl3.concept_id
-        WHERE tbl3.paper_id = tbl1.paper_id
+        FROM cohesion_analysis_tbl
+        LEFT JOIN concepts_tbl
+            ON concepts_tbl.concept_id = cohesion_analysis_tbl.concept_id
+        WHERE cohesion_analysis_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children2 ON true
 
     LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl4) 
+            to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', tbl5_from.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', tbl5_to.concept_name)
+                'from_concept_ref', jsonb_build_object('concept_name', from.concept_name),
+                'to_concept_ref', jsonb_build_object('concept_name', to.concept_name)
             )
         ) AS items
-        FROM concept_relationships_tbl tbl4
-        LEFT JOIN concepts_tbl tbl5_from 
-            ON tbl5_from.concept_id = tbl4.from_concept
-        LEFT JOIN concepts_tbl tbl5_to
-            ON tbl5_to.concept_id = tbl4.to_concept
-        WHERE tbl4.paper_id = tbl1.paper_id
+        FROM concept_relationships_tbl
+        LEFT JOIN concepts_tbl from 
+            ON from.concept_id = concept_relationships_tbl.from_concept
+        LEFT JOIN concepts_tbl to
+            ON to.concept_id = concept_relationships_tbl.to_concept
+        WHERE concept_relationships_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children3 ON true
-    WHERE tbl1.user_id = $1`,
+    WHERE research_papers_tbl.user_id = $1`,
     [user_id],
   );
 
@@ -85,55 +83,54 @@ export async function getPaperServiceSingle(user_id: string, paper_id: string) {
   const res = await pool.query(
     // replace the first table with tbl1.* if going to use for FE for complete data
     `SELECT
-      tbl1.paper_id,
-      tbl1.user_id,
-      tbl1.created_at,
-      tbl1.overall_cohesion_score,
-      COALESCE(children.items, '[]'::jsonb) as tbl2,
-      COALESCE(children2.items, '[]'::jsonb) as tbl3,
-      COALESCE(children3.items, '[]'::jsonb) as tbl4
-    FROM research_papers_tbl as tbl1
+      research_papers_tbl.*,
+      COALESCE(children.items, '[]'::jsonb),
+      COALESCE(children2.items, '[]'::jsonb),
+      COALESCE(children3.items, '[]'::jsonb)
+    FROM research_papers_tbl
+
     LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl2)
+            to_jsonb(extracted_concepts_tbl)
             || jsonb_build_object(
-                'tbl5', jsonb_build_object('concept_name', tbl5.concept_name)
+                'concepts_tbl', jsonb_build_object('concept_name', concepts_tbl.concept_name)
             )
         ) AS items
-        FROM extracted_concepts_tbl tbl2
-        LEFT JOIN concepts_tbl tbl5
-            ON tbl5.concept_id = tbl2.concept_id
-        WHERE tbl2.paper_id = tbl1.paper_id
+        FROM extracted_concepts_tbl
+        LEFT JOIN concepts_tbl
+            ON concepts_tbl.concept_id = extracted_concepts_tbl.concept_id
+        WHERE extracted_concepts_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children ON true
+
      LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl3)
+            to_jsonb(cohesion_analysis_tbl)
             || jsonb_build_object(
-                'tbl5', jsonb_build_object('concept_name', tbl5.concept_name)
+                'concepts_tbl', jsonb_build_object('concept_name', concepts_tbl.concept_name)
             )
         ) AS items
-        FROM cohesion_analysis_tbl tbl3
-        LEFT JOIN concepts_tbl tbl5
-            ON tbl5.concept_id = tbl3.concept_id
-        WHERE tbl3.paper_id = tbl1.paper_id
+        FROM cohesion_analysis_tbl
+        LEFT JOIN concepts_tbl concepts_tbl
+            ON concepts_tbl.concept_id = cohesion_analysis_tbl.concept_id
+        WHERE cohesion_analysis_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children2 ON true
 
     LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl4) 
+            to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', tbl5_from.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', tbl5_to.concept_name)
+                'from_concept_ref', jsonb_build_object('concept_name', from.concept_name),
+                'to_concept_ref', jsonb_build_object('concept_name', to.concept_name)
             )
         ) AS items
-        FROM concept_relationships_tbl tbl4
-        LEFT JOIN concepts_tbl tbl5_from 
-            ON tbl5_from.concept_id = tbl4.from_concept
-        LEFT JOIN concepts_tbl tbl5_to
-            ON tbl5_to.concept_id = tbl4.to_concept
-        WHERE tbl4.paper_id = tbl1.paper_id
+        FROM concept_relationships_tbl
+        LEFT JOIN concepts_tbl from 
+            ON from.concept_id = concept_relationships_tbl.from_concept
+        LEFT JOIN concepts_tbl to
+            ON to.concept_id = concept_relationships_tbl.to_concept
+        WHERE concept_relationships_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children3 ON true
-    WHERE tbl1.user_id = $1 AND tbl1.paper_id = $2`,
+    WHERE research_papers_tbl.user_id = $1 AND research_papers_tbl.paper_id = $2`,
     [user_id, paper_id],
   );
 
@@ -253,44 +250,43 @@ export async function getMarkdownPaperSingle(
 
 export async function getPaperMapService(user_id: string, paper_id: string) {
   const res = await pool.query(
-    // replace the first table with tbl1.* if going to use for FE for complete data
     `SELECT
-      tbl1.paper_id,
-      tbl1.user_id,
-      COALESCE(children.items, '[]'::jsonb) as tbl2,
-      COALESCE(children3.items, '[]'::jsonb) as tbl4
-    FROM research_papers_tbl as tbl1
+      research_papers_tbl.paper_id,
+      research_papers_tbl.user_id,
+      COALESCE(children.items, '[]'::jsonb),
+      COALESCE(children3.items, '[]'::jsonb)
+    FROM research_papers_tbl
 
     LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl2)
+            to_jsonb(extracted_concepts_tbl)
             || jsonb_build_object(
-                'tbl5', jsonb_build_object('concept_name', tbl5.concept_name)
+                'concepts_tbl', jsonb_build_object('concept_name', concepts_tbl.concept_name)
             )
         ) AS items
-        FROM extracted_concepts_tbl tbl2
-        LEFT JOIN concepts_tbl tbl5
-            ON tbl5.concept_id = tbl2.concept_id
-        WHERE tbl2.paper_id = tbl1.paper_id
+        FROM extracted_concepts_tbl
+        LEFT JOIN concepts_tbl
+            ON concepts_tbl.concept_id = extracted_concepts_tbl.concept_id
+        WHERE extracted_concepts_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children ON true
 
     LEFT JOIN LATERAL (
         SELECT jsonb_agg(
-            to_jsonb(tbl4) 
+            to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', tbl5_from.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', tbl5_to.concept_name)
+                'from_concept_ref', jsonb_build_object('concept_name', from.concept_name),
+                'to_concept_ref', jsonb_build_object('concept_name', to.concept_name)
             )
         ) AS items
-        FROM concept_relationships_tbl tbl4
-        LEFT JOIN concepts_tbl tbl5_from 
-            ON tbl5_from.concept_id = tbl4.from_concept
-        LEFT JOIN concepts_tbl tbl5_to
-            ON tbl5_to.concept_id = tbl4.to_concept
-        WHERE tbl4.paper_id = tbl1.paper_id
+        FROM concept_relationships_tbl
+        LEFT JOIN concepts_tbl from 
+            ON from.concept_id = concept_relationships_tbl.from_concept
+        LEFT JOIN concepts_tbl to
+            ON to.concept_id = concept_relationships_tbl.to_concept
+        WHERE concept_relationships_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children3 ON true
 
-    WHERE tbl1.user_id = $1 AND tbl1.paper_id = $2`,
+    WHERE research_papers_tbl.user_id = $1 AND research_papers_tbl.paper_id = $2`,
     [user_id, paper_id],
   );
 
@@ -298,7 +294,7 @@ export async function getPaperMapService(user_id: string, paper_id: string) {
 }
 
 export async function deletePaperSingle(user_id: string, paper_id: string) {
-  const res = await pool.query(
+  await pool.query(
     `DELETE FROM research_papers_tbl WHERE user_id = $1 AND paper_id = $2`,
     [user_id, paper_id],
   );

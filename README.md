@@ -1,5 +1,5 @@
 # Arpeps Backend
-## This project utilizes Supabase as a plain Postgres database, while having my own backend that handles authentication and db interaction. This is not to solve any particular issue with Supabase's JS SDK.
+This project utilizes Supabase as a plain Postgres database, while having my own backend that handles authentication and db interaction. This is not to solve any particular issue with Supabase's JS SDK.
 it is primarily to learn backend development using ExpressJs with TypeScript.
 
 ### Tech Stack

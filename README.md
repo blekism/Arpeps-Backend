@@ -53,15 +53,15 @@ it is primarily to learn backend development using ExpressJs with TypeScript.
 1. Run npx node-pg-migrate up to create the schema in supabase
 
 ### Project Structure
-src/
-  config/
-  controllers/
-  middleware/
-  routes/
-  scripts/
-  services/
-  types/
-  app.ts
-  server.ts
+* src/
+*    config/
+*    controllers/
+*    middleware/
+*    routes/
+*    scripts/
+*    services/
+*    types/
+*    app.ts
+*    server.ts
 
 

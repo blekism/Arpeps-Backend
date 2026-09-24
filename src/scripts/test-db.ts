@@ -7,9 +7,7 @@ async function testConnection() {
     console.log("Connected! Server time:", result.rows[0].now);
 
     // Confirm you can actually see your existing data
-    const items = await pool.query(
-      "SELECT * FROM concepts_tbl ORDER BY concept_id",
-    );
+    const items = await pool.query("SELECT * FROM your_table_name");
     console.log("Sample rows:", items.rows);
   } catch (err) {
     console.error("Connection failed:", err);

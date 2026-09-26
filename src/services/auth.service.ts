@@ -1,12 +1,16 @@
 import { pool } from "../config/db";
 import bcrypt from "bcrypt";
 
-export async function registerUser(email: string, password: string) {
+export async function registerUser(
+  email: string,
+  password: string,
+  name: string,
+) {
   const passHash = await bcrypt.hash(password, 10);
 
   const res = await pool.query(
-    "INSERT INTO users_tbl (email, password_hash) VALUES ($1, $2) RETURNING user_id, email",
-    [email, passHash],
+    "INSERT INTO users_tbl (email, password_hash, name) VALUES ($1, $2, $3) RETURNING user_id, email",
+    [email, passHash, name],
   );
   return res.rows[0];
 }

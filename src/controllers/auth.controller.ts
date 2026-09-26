@@ -5,16 +5,20 @@ import { pool } from "../config/db";
 import jwt from "jsonwebtoken";
 
 export const rijister = async (req: Request, res: Response) => {
-  const { email, password } = req.body as { email?: string; password?: string };
+  const { email, password, name } = req.body as {
+    email?: string;
+    password?: string;
+    name?: string;
+  };
 
-  if (!email || !password) {
+  if (!email || !password || !name) {
     return res.status(400).json({
       error: "email and password are required",
     });
   }
 
   try {
-    const user = await registerUser(email, password);
+    const user = await registerUser(email, password, name);
     res.status(201).json({ id: user.id, email: user.email });
   } catch (error) {
     res.status(500).json({ error: "Registration failed uwu" });
@@ -53,7 +57,7 @@ export const laggin = async (req: Request, res: Response) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
-    res.json({ id: user.id, email: user.email });
+    res.status(200).json({ id: user.id, email: user.email });
   } catch (error) {
     res.status(500).json({ error: error });
   }

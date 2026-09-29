@@ -109,8 +109,8 @@ export const postPaperController = async (req: Request, res: Response) => {
 
   try {
     console.log("data to post are: ", user_id, content);
-    const concepts = await postPaperService(user_id, content);
-    res.status(200).json(concepts);
+    const paperId = await postPaperService(user_id, content);
+    res.status(200).json({ paper_id: paperId }); // service returns data like this return res.rows[0].paper_id;
   } catch (error) {
     res.status(500).json({
       error: "Failed to fetch your papers",

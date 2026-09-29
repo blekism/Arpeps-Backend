@@ -141,11 +141,12 @@ export async function postPaperService(user_id: string, content: string) {
   const res = await pool.query(
     `INSERT INTO 
             research_papers_tbl (user_id, content, overall_cohesion_score) 
-        VALUES ($1, $2, $3)`,
+        VALUES ($1, $2, $3)
+        RETURNING *`,
     [user_id, content, "0%"],
   );
 
-  return res.rows[0];
+  return res.rows[0].paper_id;
 }
 
 export async function postSaveAnalysisService(

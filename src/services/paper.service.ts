@@ -61,16 +61,17 @@ export async function getPaperServiceAll(user_id: string) {
         SELECT jsonb_agg(
             to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', from.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', to.concept_name)
+                'from_concept_ref', jsonb_build_object('concept_name', from_concept.concept_name),
+                'to_concept_ref', jsonb_build_object('concept_name', to_concept.concept_name)
             )
         ) AS items
         FROM concept_relationships_tbl
-        LEFT JOIN concepts_tbl from 
-            ON from.concept_id = concept_relationships_tbl.from_concept
-        LEFT JOIN concepts_tbl to
-            ON to.concept_id = concept_relationships_tbl.to_concept
+        LEFT JOIN concepts_tbl from_concept
+            ON from_concept.concept_id = concept_relationships_tbl.from_concept
+        LEFT JOIN concepts_tbl to_concept
+            ON to_concept.concept_id = concept_relationships_tbl.to_concept
         WHERE concept_relationships_tbl.paper_id = research_papers_tbl.paper_id
+
     ) AS children3 ON true
     WHERE research_papers_tbl.user_id = $1`,
     [user_id],
@@ -110,7 +111,7 @@ export async function getPaperServiceSingle(user_id: string, paper_id: string) {
             )
         ) AS items
         FROM cohesion_analysis_tbl
-        LEFT JOIN concepts_tbl concepts_tbl
+        LEFT JOIN concepts_tbl
             ON concepts_tbl.concept_id = cohesion_analysis_tbl.concept_id
         WHERE cohesion_analysis_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children2 ON true
@@ -119,15 +120,15 @@ export async function getPaperServiceSingle(user_id: string, paper_id: string) {
         SELECT jsonb_agg(
             to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', from.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', to.concept_name)
+                'from_concept_ref', jsonb_build_object('concept_name', from_concept.concept_name),
+                'to_concept_ref', jsonb_build_object('concept_name', to_concept.concept_name)
             )
         ) AS items
         FROM concept_relationships_tbl
-        LEFT JOIN concepts_tbl from 
-            ON from.concept_id = concept_relationships_tbl.from_concept
-        LEFT JOIN concepts_tbl to
-            ON to.concept_id = concept_relationships_tbl.to_concept
+        LEFT JOIN concepts_tbl from_concept
+            ON from_concept.concept_id = concept_relationships_tbl.from_concept
+        LEFT JOIN concepts_tbl to_concept
+            ON to_concept.concept_id = concept_relationships_tbl.to_concept
         WHERE concept_relationships_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children3 ON true
     WHERE research_papers_tbl.user_id = $1 AND research_papers_tbl.paper_id = $2`,
@@ -275,15 +276,15 @@ export async function getPaperMapService(user_id: string, paper_id: string) {
         SELECT jsonb_agg(
             to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', from.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', to.concept_name)
+                'from_concept_ref', jsonb_build_object('concept_name', from_concept.concept_name),
+                'to_concept_ref', jsonb_build_object('concept_name', to_concept.concept_name)
             )
         ) AS items
         FROM concept_relationships_tbl
-        LEFT JOIN concepts_tbl from 
-            ON from.concept_id = concept_relationships_tbl.from_concept
-        LEFT JOIN concepts_tbl to
-            ON to.concept_id = concept_relationships_tbl.to_concept
+        LEFT JOIN concepts_tbl from_concept
+            ON from_concept.concept_id = concept_relationships_tbl.from_concept
+        LEFT JOIN concepts_tbl to_concept
+            ON to_concept.concept_id = concept_relationships_tbl.to_concept
         WHERE concept_relationships_tbl.paper_id = research_papers_tbl.paper_id
     ) AS children3 ON true
 

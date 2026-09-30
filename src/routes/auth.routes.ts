@@ -26,7 +26,7 @@ const refreshLimiter = rateLimit({
 const router = Router();
 
 router.post("/register", authLimiter, rijister);
-router.post("/login", authLimiter, laggin);
+router.post("/login", laggin);
 router.post("/logout", logout);
 router.post("/refresh", refreshLimiter, refresh);
 

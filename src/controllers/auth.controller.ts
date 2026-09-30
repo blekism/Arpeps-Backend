@@ -28,6 +28,8 @@ export const rijister = async (req: Request, res: Response) => {
 export const laggin = async (req: Request, res: Response) => {
   const { email, password } = req.body as { email?: string; password?: string };
 
+  console.log("creds are: ", email, password);
+
   if (!email || !password) {
     return res.status(400).json({
       error: "email and password are required",

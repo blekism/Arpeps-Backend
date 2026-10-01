@@ -21,7 +21,7 @@ export const rijister = async (req: Request, res: Response) => {
     const user = await registerUser(email, password, name);
     res.status(201).json({ id: user.id, email: user.email });
   } catch (error) {
-    res.status(500).json({ error: "Registration failed uwu" });
+    res.status(500).json({ error: "Registration failed uwu", devError: error });
   }
 };
 

@@ -9,7 +9,7 @@ export async function registerUser(
   const passHash = await bcrypt.hash(password, 10);
 
   const res = await pool.query(
-    "INSERT INTO users_tbl (email, password_hash, name) VALUES ($1, $2, $3) RETURNING user_id, email",
+    "INSERT INTO users_tbl (email, password_hash, username) VALUES ($1, $2, $3) RETURNING user_id, email",
     [email, passHash, name],
   );
   return res.rows[0];

@@ -26,9 +26,9 @@ export async function getPaperServiceAll(user_id: string) {
   const res = await pool.query(
     `SELECT
       research_papers_tbl.*,
-      COALESCE(children.items, '[]'::jsonb),
-      COALESCE(children2.items, '[]'::jsonb),
-      COALESCE(children3.items, '[]'::jsonb)
+      COALESCE(children.items, '[]'::jsonb) AS extracted_concepts_tbl,
+      COALESCE(children2.items, '[]'::jsonb) AS cohesion_analysis_tbl,
+      COALESCE(children3.items, '[]'::jsonb) AS concept_relationships_tbl
     FROM research_papers_tbl
 
     LEFT JOIN LATERAL (
@@ -61,8 +61,8 @@ export async function getPaperServiceAll(user_id: string) {
         SELECT jsonb_agg(
             to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', from_concept.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', to_concept.concept_name)
+                'from', jsonb_build_object('concept_name', from_concept.concept_name),
+                'to', jsonb_build_object('concept_name', to_concept.concept_name)
             )
         ) AS items
         FROM concept_relationships_tbl
@@ -85,9 +85,9 @@ export async function getPaperServiceSingle(user_id: string, paper_id: string) {
     // replace the first table with tbl1.* if going to use for FE for complete data
     `SELECT
       research_papers_tbl.*,
-      COALESCE(children.items, '[]'::jsonb),
-      COALESCE(children2.items, '[]'::jsonb),
-      COALESCE(children3.items, '[]'::jsonb)
+      COALESCE(children.items, '[]'::jsonb) AS extracted_concepts_tbl,
+      COALESCE(children2.items, '[]'::jsonb) AS cohesion_analysis_tbl,
+      COALESCE(children3.items, '[]'::jsonb) AS concept_relationships_tbl
     FROM research_papers_tbl
 
     LEFT JOIN LATERAL (
@@ -120,8 +120,8 @@ export async function getPaperServiceSingle(user_id: string, paper_id: string) {
         SELECT jsonb_agg(
             to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', from_concept.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', to_concept.concept_name)
+                'from', jsonb_build_object('concept_name', from_concept.concept_name),
+                'to', jsonb_build_object('concept_name', to_concept.concept_name)
             )
         ) AS items
         FROM concept_relationships_tbl
@@ -255,8 +255,8 @@ export async function getPaperMapService(user_id: string, paper_id: string) {
     `SELECT
       research_papers_tbl.paper_id,
       research_papers_tbl.user_id,
-      COALESCE(children.items, '[]'::jsonb),
-      COALESCE(children3.items, '[]'::jsonb)
+      COALESCE(children.items, '[]'::jsonb) AS extracted_concepts_tbl,
+      COALESCE(children3.items, '[]'::jsonb) AS concept_relationships_tbl
     FROM research_papers_tbl
 
     LEFT JOIN LATERAL (
@@ -276,8 +276,8 @@ export async function getPaperMapService(user_id: string, paper_id: string) {
         SELECT jsonb_agg(
             to_jsonb(concept_relationships_tbl) 
             || jsonb_build_object(
-                'from_concept_ref', jsonb_build_object('concept_name', from_concept.concept_name),
-                'to_concept_ref', jsonb_build_object('concept_name', to_concept.concept_name)
+                'from', jsonb_build_object('concept_name', from_concept.concept_name),
+                'to', jsonb_build_object('concept_name', to_concept.concept_name)
             )
         ) AS items
         FROM concept_relationships_tbl

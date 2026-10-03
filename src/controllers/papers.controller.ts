@@ -21,6 +21,8 @@ const paperSchema = z.object({
 //-------------------------------------------
 const analysisSchema = z.object({
   paper_id: z.string(),
+  title: z.string(),
+  overall_cohesion_score: z.string(),
 
   extracted_concepts: z.array(
     z.object({
@@ -56,7 +58,7 @@ export const getPaperControllerAll = async (req: Request, res: Response) => {
     res.status(200).json(concepts);
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: "Failed to fetch your papers get all",
       devErr: error,
     });
   }
@@ -90,7 +92,7 @@ export const getPaperControllerSingle = async (req: Request, res: Response) => {
     res.status(200).json(concepts);
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: "Failed to fetch your papers get sengle",
       devErr: error,
     });
   }
@@ -102,18 +104,20 @@ export const postPaperController = async (req: Request, res: Response) => {
   const parsed = paperSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return res.status(400).json({ error: "invalid paper content" });
+    return res
+      .status(400)
+      .json({ error: "invalid paper content", devErr: parsed.error });
   }
 
   const { content } = parsed.data;
 
   try {
-    console.log("data to post are: ", user_id, content);
+    // console.log("data to post are: ", user_id, content);
     const paperId = await postPaperService(user_id, content);
     res.status(200).json({ paper_id: paperId }); // service returns data like this return res.rows[0].paper_id;
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: "failed to upload paper",
       devErr: error,
     });
   }
@@ -134,6 +138,8 @@ export const postSaveAnalysisController = async (
 
   const {
     paper_id,
+    title,
+    overall_cohesion_score,
     extracted_concepts,
     concept_relationships,
     cohesion_analysis,
@@ -142,6 +148,8 @@ export const postSaveAnalysisController = async (
   try {
     await postSaveAnalysisService(
       paper_id,
+      title,
+      overall_cohesion_score,
       extracted_concepts,
       concept_relationships,
       cohesion_analysis,
@@ -149,7 +157,7 @@ export const postSaveAnalysisController = async (
     res.status(200).json({ status: "ok" });
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: `Failed to save analysis ${error}`,
       devErr: error,
     });
   }
@@ -186,7 +194,7 @@ export const getMarkdownControllerSingle = async (
     res.status(200).json(concepts);
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: "Failed to get markdown",
       devErr: error,
     });
   }
@@ -220,7 +228,7 @@ export const getMapControllerSingle = async (req: Request, res: Response) => {
     res.status(200).json(concepts);
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: "Failed to get map",
       devErr: error,
     });
   }
@@ -250,7 +258,7 @@ export const deletePaperControllerSingle = async (
     res.status(200).json({ message: "Paper deleted successfully" });
   } catch (error) {
     res.status(500).json({
-      error: "Failed to fetch your papers",
+      error: "Failed to delete paper",
       devErr: error,
     });
   }

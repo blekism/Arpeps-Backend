@@ -152,6 +152,8 @@ export async function postPaperService(user_id: string, content: string) {
 
 export async function postSaveAnalysisService(
   paper_id: string,
+  title: string,
+  score: string,
   extracted_concepts: {
     extracted_content: string;
     concept_id: number;
@@ -174,6 +176,11 @@ export async function postSaveAnalysisService(
   try {
     await client.query("BEGIN");
 
+    await client.query(
+      `UPDATE research_papers_tbl SET title = $1, overall_cohesion_score = $2 WHERE paper_id = $3`,
+      [title, score, paper_id],
+    );
+
     if (extracted_concepts.length > 0) {
       const { sql, values } = buildMultiRowInsert(
         "extracted_concepts_tbl",
@@ -184,7 +191,7 @@ export async function postSaveAnalysisService(
           ec.concept_id,
         ]),
       );
-      console.log("extracted_concepts values:", values);
+      console.log("extracted_concepts_tbl values:", values);
 
       await client.query(sql, values);
     }
@@ -209,7 +216,7 @@ export async function postSaveAnalysisService(
           cr.to_concept,
         ]),
       );
-      console.log("extracted_concepts values:", values);
+      console.log("concept_relationships_tbl values:", values);
       await client.query(sql, values);
     }
 
@@ -224,7 +231,7 @@ export async function postSaveAnalysisService(
           ac.cohesion_score,
         ]),
       );
-      console.log("extracted_concepts values:", values);
+      console.log("cohesion_analysis_tbl values:", values);
 
       await client.query(sql, values);
     }
@@ -243,7 +250,7 @@ export async function getMarkdownPaperSingle(
   paper_id: string,
 ) {
   const res = await pool.query(
-    `SELECT paper_id, content FROM research_papers_tbl WHERE user_id = $1 AND paper_id = $2`,
+    `SELECT paper_id, content, title FROM research_papers_tbl WHERE user_id = $1 AND paper_id = $2`,
     [user_id, paper_id],
   );
 
@@ -255,6 +262,7 @@ export async function getPaperMapService(user_id: string, paper_id: string) {
     `SELECT
       research_papers_tbl.paper_id,
       research_papers_tbl.user_id,
+      research_papers_tbl.title,
       COALESCE(children.items, '[]'::jsonb) AS extracted_concepts_tbl,
       COALESCE(children3.items, '[]'::jsonb) AS concept_relationships_tbl
     FROM research_papers_tbl

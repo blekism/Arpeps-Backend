@@ -56,7 +56,7 @@ export const getPaperControllerAll = async (req: Request, res: Response) => {
   try {
     const concepts = await getPaperServiceAll(user_id);
     res.status(200).json(concepts);
-  } catch (error) {
+  } catch (error) { 
     res.status(500).json({
       error: "Failed to fetch your papers get all",
       devErr: error,

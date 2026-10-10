@@ -5,7 +5,7 @@ export const cookieBase = {
   httpOnly: true,
   secure: isProd,
   sameSite: "strict" as const,
-  domain: isProd ? process.env.COOKIE_DOMAIN : undefined, // e.g. ".yourdomain.com"
+  path: "/",
 };
 export const accessCookieOptions = { ...cookieBase, maxAge: 15 * 60 * 1000 };
 export const refreshCookieOptions = {

@@ -3,6 +3,11 @@ import { registerUser, verifyUser } from "../services/auth.service";
 import { generateToken } from "../services/token.service";
 import { pool } from "../config/db";
 import jwt from "jsonwebtoken";
+import {
+  accessCookieOptions,
+  cookieBase,
+  refreshCookieOptions,
+} from "../config/cookies";
 
 export const rijister = async (req: Request, res: Response) => {
   const { email, password, name } = req.body as {
@@ -46,18 +51,8 @@ export const laggin = async (req: Request, res: Response) => {
       [user.user_id, refreshToken],
     );
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      maxAge: 15 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    res.cookie("accessToken", accessToken, accessCookieOptions);
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     res.status(200).json({ id: user.id, email: user.email });
   } catch (error) {
@@ -73,8 +68,8 @@ export const logout = async (req: Request, res: Response) => {
       [refreshToken],
     );
   }
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", cookieBase);
+  res.clearCookie("refreshToken", cookieBase);
   res.json({ status: "logged out" });
 };
 
@@ -117,18 +112,8 @@ export const refresh = async (req: Request, res: Response) => {
       [payload.user_id, refreshToken],
     ); // insert newly generated refreshToken
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      maxAge: 15 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    res.cookie("accessToken", accessToken, accessCookieOptions);
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
     // set sa browser
     res.json({ status: "refreshed" });
   } catch (error) {

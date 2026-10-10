@@ -13,7 +13,9 @@ dotenv.config();
 
 const app: Application = express();
 
-const allowedOrigins = ["http://localhost:3000", "https://samplesite.com"];
+app.set("trust proxy", 1);
+
+const allowedOrigins = ["http://localhost:3000", process.env.FRONTEND_URL];
 app.use(
   cors({
     origin: (origin, callback) => {

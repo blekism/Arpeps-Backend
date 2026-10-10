@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import crypto from "crypto";
+import { csrfCookieOptions } from "../config/cookies";
 
 export function issueCsrfToken(
   req: Request,
@@ -8,11 +9,7 @@ export function issueCsrfToken(
 ) {
   if (!req.cookies?.csrfToken) {
     const token = crypto.randomBytes(32).toString("hex");
-    res.cookie("csrfToken", token, {
-      httpOnly: false,
-      sameSite: "strict",
-      secure: true,
-    });
+    res.cookie("csrfToken", token, csrfCookieOptions);
   }
   next();
 }
